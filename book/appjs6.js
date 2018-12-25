@@ -24,6 +24,12 @@ class UI {
         list.appendChild(row);
     }
 
+    displayBooks(books) {
+        for (let i = 0; i < books.length; i++) {
+            this.addBookToList(books[i]);
+        }
+    }
+
     deleteBook(clicked) {
         if (clicked.target.className === 'delete') {
             clicked.target.parentElement.parentElement.remove();
@@ -55,12 +61,39 @@ class UI {
     }
 }
 
+// Local storage
+class Storage {
+    static saveBook(book) {
+        localStorage.setItem(book.isbn, JSON.stringify(book));
+        console.log("added: " + book);
+    }
+    static loadBooks() {
+        let bookArray = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            bookArray.push(JSON.parse(localStorage.getItem(localStorage.key(i))));
+        }
+        return bookArray;
+    }
+    static removeBook(clicked) {
+        if (clicked.target.className === 'delete') {
+            let isbn = clicked.target.parentElement.parentElement.children[2].innerHTML
+            localStorage.removeItem(isbn);
+        }
+    }
+}
+
+if (localStorage.length > 0) {
+    console.log("Restoring books");
+    let ui = new UI();
+    ui.displayBooks(Storage.loadBooks());
+}
 document.getElementById('book-form').addEventListener('submit',
 function (e) {
     e.preventDefault();
     const title = document.getElementById('title').value;
     const author = document.getElementById('author').value;
     const isbn = document.getElementById('isbn').value;
+    console.log('isbn #' + Number.parseInt(isbn));
           
      // Instantiate Book
     const book = new Book(title, author, isbn);
@@ -72,6 +105,7 @@ function (e) {
         return;
     }
     ui.addBookToList(book);
+    Storage.saveBook(book);
     ui.showAlert('Book added', 'success')
 
     
@@ -82,4 +116,5 @@ document.getElementById('book-list').addEventListener('click', function(e) {
     e.preventDefault();
     const ui = new UI();
     ui.deleteBook(e);
+    Storage.removeBook(e);
 });
