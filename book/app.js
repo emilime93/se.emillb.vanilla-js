@@ -38,7 +38,7 @@ UI.prototype.showAlert = function(message, className) {
     alert.appendChild(document.createTextNode(message));
     const container = document.querySelector('.container');
     const form = document.querySelector('#book-form');
-    container.insertBefore(alert, form)
+    container.insertBefore(alert, form);
     setTimeout(function() {
         alert.remove();
     }, 3000);
